@@ -107,7 +107,7 @@ This means your entire UI theme adapts to match your current wallpaper!
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/Mumbl3-Shell.git
+   git clone https://github.com/BotrosDev/Mumbl3-Shell.git
    cd Mumbl3-Shell
    ```
 
