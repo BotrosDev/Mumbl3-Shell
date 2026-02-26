@@ -1,0 +1,12 @@
+module modules
+DropdownPanelClock 1.0 DropdownPanelClock.qml
+Calendar 1.0 Calendar.qml
+CalendarButton 1.0 CalendarButton.qml
+AppLauncherButton 1.0 AppLauncherButton_Embedded.qml
+AppLauncher_Embedded 1.0 AppLauncher_Embedded.qml
+MediaPlayerButton 1.0 MediaPlayerButton.qml
+MediaPlayer 1.0 MediaPlayer.qml
+NotifButton 1.0 NotifButton.qml
+Notif 1.0 Notif.qml
+SettingsButton 1.0 SettingsButton.qml
+Settings 1.0 Settings.qml
