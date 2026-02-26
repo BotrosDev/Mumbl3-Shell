@@ -13,7 +13,7 @@
 
 *A Frieren-themed Quickshell configuration for Hyprland*
 
-**Inspired by [fri(no)rain(no)bar](https://github.com/ozwaldorf/frinorainobar)**
+**Inspired by [fri(no)rain(no)bar](github.com/Rexcrazy804/Zaphkiel/tree/quickshell-3/users/Configs/quickshell/frierainbar)**
 
 [Features](#-features) • [Installation](#-installation) • [Screenshots](#-screenshots) • [Tips & Tricks](#-tips--tricks) • [Roadmap](#-roadmap)
 
