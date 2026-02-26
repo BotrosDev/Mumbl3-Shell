@@ -80,6 +80,11 @@ Mumbl3-Shell uses **matugen** for dynamic color generation:
 This means your entire UI theme adapts to match your current wallpaper!
 
 ## 📸 Screenshots
+![Alt text description](Pictures/Screenshot_2026-02-26_23-36-12.png)
+![Alt text](Pictures/Screenshot_2026-02-26_23-36-53.png)
+![Alt text](Pictures/Screenshot_2026-02-26_23-37-31.png)
+![Alt text](Pictures/Screenshot_2026-02-26_23-38-42.png)
+![Alt text](Pictures/WallpaperChanged.png)
 
 ## 🚀 Installation
 
@@ -331,9 +336,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Discussions:** [GitHub Discussions](https://github.com/BotrosDev/Mumbl3-Shell/discussions)
 
 ---
-
+<div align="center">
+   
 **Made with ❄️ by QML nerds for Hyprland enthusiasts**
 
 *"The journey continues..."*
 
 If you find this useful, consider giving it a ⭐!
+</div>
