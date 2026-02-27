@@ -321,17 +321,9 @@ This is a passion project, but contributions are welcome!
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- **[fri(no)rain(no)bar](github.com/Rexcrazy804/Zaphkiel/tree/quickshell-3/users/Configs/quickshell/frierainbar)** - For the dropdown panel inspiration and permission to use code
-- **[Quickshell](https://github.com/quickshell-community/quickshell)** - For the amazing QML shell framework
-- **[Hyprland](https://hyprland.org/)** - For the best Wayland compositor experience
-- **[Matugen](https://github.com/InioX/matugen)** - For dynamic color theming
-- **Frieren: Beyond Journey's End** - For the beautiful aesthetic that makes this shell special ❄️✨
-
 ## 📬 Contact & Support
 
-- **Discord:** [Join our server](#) for updates and support
+- **Discord:** [Join our server](https://discord.gg/UDu85xgvQc) for updates and support
 - **Issues:** [GitHub Issues](https://github.com/BotrosDev/Mumbl3-Shell/issues)
 - **Discussions:** [GitHub Discussions](https://github.com/BotrosDev/Mumbl3-Shell/discussions)
 
@@ -342,5 +334,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 *"The journey continues..."*
 
-If you find this useful, consider giving it a ⭐!
+please, consider giving us a ⭐!
 </div>
