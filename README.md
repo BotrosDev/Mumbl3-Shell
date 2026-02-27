@@ -45,29 +45,29 @@ The dropdown panel concept was inspired by fri(no)rain(no)bar (used with explici
 
 ### Currently Working
 
-- **❄️ Dropdown Panel System** - Hidden top bar that slides down with smooth Material Design animations
-- **🎵 Media Player** - Full playback controls with album art (includes a special easter egg!)
-- **🔔 Notification System** - Custom notification server with popup management
-- **📅 Calendar & Clock** - Beautiful time display with expandable calendar view
-- **🖼️ Wallpaper Selector** - Built-in wallpaper management powered by Swww
-- **💼 Workspace Management** - Interactive Hyprland workspace indicators with right-click for extended view
-- **🔊 Audio Controls** - Volume slider with quick mute functionality
-- **💡 Brightness Controls** - Screen brightness adjustment (actually functional!)
-- **🔋 Battery Monitor** - Adaptive battery icons
-- **📶 WiFi Widget** - Network status display
-- **🎨 Matugen Integration** - Dynamic color theming system
+- **Dropdown Panel System** - Hidden top bar that slides down with smooth Material Design animations
+- **Media Player** - Full playback controls with album art (includes a special easter egg!)
+- **Notification System** - Custom notification server with popup management
+- **Calendar & Clock** - Beautiful time display with expandable calendar view
+- **Wallpaper Selector** - Built-in wallpaper management powered by Swww
+- **Workspace Management** - Interactive Hyprland workspace indicators with right-click for extended view
+- **Audio Controls** - Volume slider with quick mute functionality
+- **Brightness Controls** - Screen brightness adjustment (actually functional!)
+- **Battery Monitor** - Adaptive battery icons
+- **WiFi Widget** - Network status display
+- **Matugen Integration** - Dynamic color theming system
 
 ### UI Mockups (Planned Features)
 
 The following are beautifully designed UI previews showing the planned functionality:
-- **⚙️ Settings Panel** - 8 tab system (Accounts, Data, System, Devices, Networks, Personalization, Power, Privacy)
-- **🚀 Integrated App Launcher** - Built-in Quickshell launcher (replacing Rofi)
-- **📋 System Tray** - Application tray integration
-- **📎 Clipboard Manager** - Clipboard history in pure QML
-- **📸 Screenshot Tool** - Custom screenshot utility
-- **🎥 Screen Recorder** - Built-in recording functionality
-- **🔒 Lock Screen** - QML-based screen lock
-- **🚪 Boot Menu** - Custom boot interface
+- **Settings Panel** - 8 tab system (Accounts, Data, System, Devices, Networks, Personalization, Power, Privacy)
+- **Integrated App Launcher** - Built-in Quickshell launcher (replacing Rofi)
+- **System Tray** - Application tray integration
+- **Clipboard Manager** - Clipboard history in pure QML
+- **Screenshot Tool** - Custom screenshot utility
+- **Screen Recorder** - Built-in recording functionality
+- **Lock Screen** - QML-based screen lock
+- **Boot Menu** - Custom boot interface
 
 ## 🎨 Color System
 
@@ -168,7 +168,7 @@ Want to unlock a special detail in the media player?
 │
 ├── dropdownPanel/            # Main dropdown panel
 │   ├── Data/                 # Core data providers
-│   │   ├── Colors.qml       # 🎨 Matugen color integration
+│   │   ├── Colors.qml       # Matugen color integration
 │   │   ├── Audio.qml        # Audio management
 │   │   ├── Clock.qml        # Time/date logic
 │   │   ├── Globals.qml      # Global state
@@ -243,7 +243,7 @@ Place images/GIFs in `bar/Assets/` and reference them in your QML components
 - [x] Workspace management
 - [x] Matugen color integration
 
-### 🚧 Phase 2: Settings Implementation (In Progress)
+### Phase 2: Settings Implementation (In Progress)
 - [ ] Make all 8 settings tabs functional
   - [ ] Accounts Tab (profile, sessions, user groups)
   - [ ] Data Tab (storage monitoring, cleanup tools, backup)
@@ -254,7 +254,7 @@ Place images/GIFs in `bar/Assets/` and reference them in your QML components
   - [ ] Power Tab (battery management, power profiles)
   - [ ] Privacy Tab (firewall, updates, logging)
 
-### 🔮 Phase 3: Core Tools
+### Phase 3: Core Tools
 - [ ] Pure QML App Launcher (replace Rofi)
 - [ ] System Tray integration
 - [ ] Clipboard manager (QML-based)
@@ -263,7 +263,7 @@ Place images/GIFs in `bar/Assets/` and reference them in your QML components
 - [ ] Lock screen
 - [ ] Boot menu
 
-### 🌟 Phase 4: Polish & Extras
+### Phase 4: Polish & Extras
 - [ ] Optional rounded corners with screen frame
 - [ ] Alternative panel design for framed mode
 - [ ] Performance optimizations
@@ -272,7 +272,7 @@ Place images/GIFs in `bar/Assets/` and reference them in your QML components
 
 See [TASKS.md](TASKS.md) for detailed task breakdown.
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Panel won't appear
 ```bash
@@ -304,11 +304,11 @@ ls ~/.local/share/quickshell/colors.json
 
 This is a passion project, but contributions are welcome!
 
-- 🐛 Report bugs
-- 💡 Suggest features
-- 🔧 Submit pull requests
-- 📖 Improve documentation
-- 💬 Join our Discord community
+-  Report bugs
+-  Suggest features
+-  Submit pull requests
+-  Improve documentation
+-  Join our Discord community
 
 ### Development Notes
 
