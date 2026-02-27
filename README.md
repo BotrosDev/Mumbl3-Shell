@@ -22,7 +22,7 @@
 ### 💎 Made by the Dream Team
 
 **[Botros](https://github.com/BotrosDev)** - The Greatest Developer That Ever Lived  
-**[MumbleGameZ](https://github.com/MumbleGameZ)** - The Greatest Developer Team That Ever Lived  
+**[MumbleGameZ](https://github.com/MumbleGameZ)** - The Greatest Developer That Ever Lived  
 **[EmiliaCatgirl](https://github.com/EmiliaCatgirl)** - The Greatest Catgirl That Ever Lived
 
 🌟 *Stay updated! Join our [Discord Server](https://discord.gg/UDu85xgvQc) for the latest news and updates. Joining using this link will grant you the "OG Council" role!*
