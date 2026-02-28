@@ -310,12 +310,13 @@ This is a passion project, but contributions are welcome!
 -  Improve documentation
 -  Join our Discord community
 
-### Development Notes
+### Developer Notes
 
 - Some code in the `Data/` folder is inherited from fri(no)rain(no)bar (used with permission)
 - The dropdown panel concept is inspired by fri(no)rain(no)bar but extensively modified
 - New modules are entirely custom-built
 - All Frieren assets are properly sourced
+- Rofi was not made by any of Mumbl3 developers. and the code comes from [Hyprnova](https://github.com/zDyant/HyprNova) and [Rofi Theme Collection](https://github.com/dctxmei/rofi-themes) 
 
 ## 📝 License
 
