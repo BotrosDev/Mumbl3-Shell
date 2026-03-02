@@ -1,9 +1,5 @@
 # Mumbl3-Shell
 A Frieren-themed Quickshell config for Hyprland featuring dropdown panel, media controls, dynamic colors, and more. Pure QML on Arch Linux.
-
-
-# Mumbl3-Shell
-
 <div align="center">
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
