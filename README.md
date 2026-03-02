@@ -50,6 +50,9 @@ The bar sits hidden at the top of your screen. Click it and it drops down with:
 
 ## IMPORTANT NOTE
 ```I've built a settings panel with 8 tabs, but right now they're just UI mockups showing what I want to implement. See [TASKS.md](TASKS.md) for the full list of what's working vs what's planned.```
+> ⚠️ **ALPHA SOFTWARE - NOT FOR DAILY USE**  
+> This is the first public release of Mumbl3-Shell. It's functional but buggy.
+> Many features are UI mockups only. Expect crashes and incomplete functionality.
 
 ## Installing
 
