@@ -86,6 +86,8 @@ yay -S quickshell-git hyprland matugen swww rofi pipewire wireplumber bluez netw
 matugen image /path/to/wallpaper.png
 
 # Run it
+quickshell -p ~/.config/quickshell/bar
+# if the previos dont work 
 quickshell
 ```
 
