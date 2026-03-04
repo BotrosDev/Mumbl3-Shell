@@ -16,13 +16,9 @@ Item {
     property string wallpaperDir: StandardPaths.writableLocation(StandardPaths.PicturesLocation) + "/Wallpapers"
 
     function setWallpaper(path) {
-        setWallpaperProc.command = ["swww", "img", path, "--transition-type", "fade", "--transition-fps", "60"]
-        setWallpaperProc.running = true
-        
-        // Generate colors with matugen (source-color-index prevents interactive prompt)
-        matugenProc.command = ["matugen", "image", path, "--mode", "dark", "--source-color-index", "0"]
-        matugenProc.running = true
-        
+        // Let ThemeSettings handle everything
+        Dat.ThemeSettings.setWallpaper(path)
+    
         closeRequested()   
     }
     

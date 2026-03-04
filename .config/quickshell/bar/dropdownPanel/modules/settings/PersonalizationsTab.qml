@@ -8,14 +8,17 @@ import "../../Data/" as Dat
 Item {
     id: personalizationsTab
     
-    Process {
-        id: commandRunner
-        running: false
-        property var callback: null
-        
-        onExited: {
-            if (callback) callback(standardOutput)
-        }
+    // Load current settings from ThemeSettings
+    Component.onCompleted: {
+        // Sync UI with saved settings
+        colorModeCombo.currentIndex = Dat.ThemeSettings.colorMode === "dark" ? 0 : 1
+        paletteIndexSlider.value = Dat.ThemeSettings.paletteIndex
+        transparencySlider.value = Dat.ThemeSettings.transparency
+        blurSlider.value = Dat.ThemeSettings.blurStrength
+        barPositionCombo.currentIndex = Dat.ThemeSettings.barPosition === "top" ? 0 : 1
+        panelWidthSlider.value = Dat.ThemeSettings.panelWidth
+        spacingSlider.value = Dat.ThemeSettings.widgetSpacing
+        animationsSwitch.checked = Dat.ThemeSettings.animationsEnabled
     }
     
     ScrollView {
@@ -51,13 +54,12 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        color: darkModeSwitch.checked ? "#1a1a1a" : "#f5f5f5"
+                        color: colorModeCombo.currentIndex === 0 ? "#1a1a1a" : "#f5f5f5"
                         radius: 8
-                        border.color: accentColorPicker.selectedColor
+                        border.color: Dat.Colors.color.primary
                         border.width: 2
                         
                         Behavior on color { ColorAnimation { duration: 300 } }
-                        Behavior on border.color { ColorAnimation { duration: 200 } }
                         
                         // Mini bar preview
                         Rectangle {
@@ -68,7 +70,7 @@ Item {
                                 bottom: barPositionCombo.currentIndex === 1 ? parent.bottom : undefined
                             }
                             height: 30
-                            color: accentColorPicker.selectedColor
+                            color: Dat.Colors.color.primary
                             opacity: transparencySlider.value
                             
                             Behavior on opacity { NumberAnimation { duration: 200 } }
@@ -76,14 +78,14 @@ Item {
                             RowLayout {
                                 anchors.fill: parent
                                 anchors.margins: 5
-                                spacing: 5
+                                spacing: spacingSlider.value / 2
                                 
                                 Repeater {
                                     model: 4
                                     Rectangle {
                                         width: 40
                                         height: 20
-                                        color: darkModeSwitch.checked ? "#2a2a2a" : "#ffffff"
+                                        color: colorModeCombo.currentIndex === 0 ? "#2a2a2a" : "#ffffff"
                                         radius: 4
                                     }
                                 }
@@ -95,13 +97,24 @@ Item {
                             anchors.centerIn: parent
                             width: parent.width * 0.6
                             height: parent.height * 0.5
-                            color: darkModeSwitch.checked ? "#2a2a2a" : "#ffffff"
+                            color: colorModeCombo.currentIndex === 0 ? "#2a2a2a" : "#ffffff"
                             radius: 6
-                            border.color: accentColorPicker.selectedColor
+                            border.color: Dat.Colors.color.primary
                             border.width: 1
-                            opacity: blurSlider.value
+                            opacity: transparencySlider.value
                             
                             Behavior on opacity { NumberAnimation { duration: 200 } }
+                        }
+                        
+                        // Blur indicator
+                        Text {
+                            anchors.bottom: parent.bottom
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.bottomMargin: 5
+                            text: `Blur: ${Math.round(blurSlider.value)}`
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 10
+                            opacity: 0.6
                         }
                     }
                 }
@@ -110,7 +123,7 @@ Item {
             // === APPEARANCE SECTION ===
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 300
+                Layout.preferredHeight: 240
                 color: Dat.Colors.color.surface_variant
                 radius: 12
                 border.color: Dat.Colors.color.primary
@@ -128,121 +141,116 @@ Item {
                         font.bold: true
                     }
                     
-                    // Theme Selector
+                    // Color Mode (Light/Dark)
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
                         
                         Text {
                             Layout.preferredWidth: 120
-                            text: "Theme"
+                            text: "Color Mode"
                             color: Dat.Colors.color.on_surface
                             font.pixelSize: 12
                         }
                         
                         ComboBox {
+                            id: colorModeCombo
                             Layout.fillWidth: true
-                            model: ["Catppuccin Mocha", "Nord", "Dracula", "Gruvbox", "Tokyo Night"]
+                            model: ["Dark Mode", "Light Mode"]
+                            
                             background: Rectangle {
                                 color: Dat.Colors.color.surface
                                 radius: 6
                                 border.color: Dat.Colors.color.primary
                                 border.width: 1
                             }
+                            
                             contentItem: Text {
                                 text: parent.displayText
                                 color: Dat.Colors.color.on_surface
                                 leftPadding: 10
                                 verticalAlignment: Text.AlignVCenter
                             }
+                            
+                            onCurrentIndexChanged: {
+                                var mode = currentIndex === 0 ? "dark" : "light"
+                                Dat.ThemeSettings.setColorMode(mode)
+                            }
                         }
                     }
                     
-                    // Accent Color Picker
+                    // Palette Selector (0-4)
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
                         
                         Text {
                             Layout.preferredWidth: 120
-                            text: "Accent Color"
+                            text: "Color Palette"
                             color: Dat.Colors.color.on_surface
                             font.pixelSize: 12
                         }
                         
+                        // Palette buttons
                         Row {
                             spacing: 8
                             
                             Repeater {
-                                id: accentColorPicker
-                                property color selectedColor: "#89b4fa"
-                                
-                                model: ["#89b4fa", "#f38ba8", "#a6e3a1", "#fab387", "#cba6f7", "#f9e2af"]
+                                model: 5
                                 
                                 Rectangle {
-                                    width: 32
-                                    height: 32
-                                    color: modelData
-                                    radius: 16
-                                    border.color: Dat.Colors.color.on_surface
-                                    border.width: accentColorPicker.selectedColor === modelData ? 3 : 0
+                                    width: 40
+                                    height: 40
+                                    radius: 20
+                                    color: paletteIndexSlider.value === index ? Dat.Colors.color.primary : Dat.Colors.color.surface
+                                    border.color: Dat.Colors.color.primary
+                                    border.width: 2
                                     
-                                    Behavior on border.width { NumberAnimation { duration: 150 } }
+                                    Behavior on color { ColorAnimation { duration: 150 } }
+                                    
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: (index + 1).toString()
+                                        color: paletteIndexSlider.value === index ? Dat.Colors.color.on_primary : Dat.Colors.color.on_surface
+                                        font.pixelSize: 14
+                                        font.bold: true
+                                    }
                                     
                                     MouseArea {
                                         anchors.fill: parent
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: {
-                                            accentColorPicker.selectedColor = modelData
+                                            paletteIndexSlider.value = index
                                         }
                                     }
                                 }
                             }
                         }
                         
-                        Item { Layout.fillWidth: true }
-                    }
-                    
-                    // Dark/Light Toggle
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-                        
-                        Text {
-                            Layout.preferredWidth: 120
-                            text: "Dark Mode"
-                            color: Dat.Colors.color.on_surface
-                            font.pixelSize: 12
-                        }
-                        
-                        Switch {
-                            id: darkModeSwitch
-                            checked: true
+                        // Hidden slider for state management
+                        Slider {
+                            id: paletteIndexSlider
+                            visible: false
+                            from: 0
+                            to: 4
+                            stepSize: 1
+                            value: 0
                             
-                            indicator: Rectangle {
-                                implicitWidth: 48
-                                implicitHeight: 24
-                                x: darkModeSwitch.leftPadding
-                                y: parent.height / 2 - height / 2
-                                radius: 12
-                                color: darkModeSwitch.checked ? Dat.Colors.color.primary : Dat.Colors.color.surface
-                                border.color: Dat.Colors.color.primary
-                                border.width: 1
-                                
-                                Rectangle {
-                                    x: darkModeSwitch.checked ? parent.width - width - 2 : 2
-                                    y: 2
-                                    width: 20
-                                    height: 20
-                                    radius: 10
-                                    color: Dat.Colors.color.on_primary
-                                    
-                                    Behavior on x { NumberAnimation { duration: 150 } }
-                                }
+                            onValueChanged: {
+                                Dat.ThemeSettings.setPaletteIndex(Math.round(value))
                             }
                         }
                         
                         Item { Layout.fillWidth: true }
+                    }
+                    
+                    Text {
+                        text: " Tip: Each palette shows different color schemes from your wallpaper"
+                        color: Dat.Colors.color.on_surface
+                        font.pixelSize: 10
+                        opacity: 0.6
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
                     }
                     
                     // Transparency Slider
@@ -292,6 +300,12 @@ Item {
                                 color: Dat.Colors.color.primary
                                 border.color: Dat.Colors.color.on_primary
                                 border.width: 2
+                            }
+                            
+                            onPressedChanged: {
+                                if (!pressed) {
+                                    Dat.ThemeSettings.setTransparency(value)
+                                }
                             }
                         }
                         
@@ -352,15 +366,15 @@ Item {
                                 border.width: 2
                             }
                             
-                            onValueChanged: {
-                                commandRunner.command = ["hyprctl", "keyword", "decoration:blur:size", Math.round(value).toString()]
-                                commandRunner.callback = null
-                                commandRunner.running = true
+                            onPressedChanged: {
+                                if (!pressed) {
+                                    Dat.ThemeSettings.setBlurStrength(value)
+                                }
                             }
                         }
                         
                         Text {
-                            text: Math.round(blurSlider.value)
+                            text: Math.round(blurSlider.value).toString()
                             color: Dat.Colors.color.on_surface
                             font.pixelSize: 12
                             Layout.preferredWidth: 40
@@ -406,18 +420,33 @@ Item {
                             id: barPositionCombo
                             Layout.fillWidth: true
                             model: ["Top", "Bottom"]
+                            
                             background: Rectangle {
                                 color: Dat.Colors.color.surface
                                 radius: 6
                                 border.color: Dat.Colors.color.primary
                                 border.width: 1
                             }
+                            
                             contentItem: Text {
                                 text: parent.displayText
                                 color: Dat.Colors.color.on_surface
                                 leftPadding: 10
                                 verticalAlignment: Text.AlignVCenter
                             }
+                            
+                            onCurrentIndexChanged: {
+                                var position = currentIndex === 0 ? "top" : "bottom"
+                                Dat.ThemeSettings.barPosition = position
+                                Dat.ThemeSettings.saveSettings()
+                            }
+                        }
+                        
+                        Text {
+                            text: "⚠️ Requires restart"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 10
+                            opacity: 0.5
                         }
                     }
                     
@@ -469,6 +498,13 @@ Item {
                                 border.color: Dat.Colors.color.on_primary
                                 border.width: 2
                             }
+                            
+                            onPressedChanged: {
+                                if (!pressed) {
+                                    Dat.ThemeSettings.panelWidth = Math.round(value)
+                                    Dat.ThemeSettings.saveSettings()
+                                }
+                            }
                         }
                         
                         Text {
@@ -476,6 +512,13 @@ Item {
                             color: Dat.Colors.color.on_surface
                             font.pixelSize: 12
                             Layout.preferredWidth: 45
+                        }
+                        
+                        Text {
+                            text: "⚠️"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 10
+                            opacity: 0.5
                         }
                     }
                     
@@ -527,6 +570,13 @@ Item {
                                 border.color: Dat.Colors.color.on_primary
                                 border.width: 2
                             }
+                            
+                            onPressedChanged: {
+                                if (!pressed) {
+                                    Dat.ThemeSettings.widgetSpacing = Math.round(value)
+                                    Dat.ThemeSettings.saveSettings()
+                                }
+                            }
                         }
                         
                         Text {
@@ -534,6 +584,13 @@ Item {
                             color: Dat.Colors.color.on_surface
                             font.pixelSize: 12
                             Layout.preferredWidth: 45
+                        }
+                        
+                        Text {
+                            text: "⚠️"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 10
+                            opacity: 0.5
                         }
                     }
                     
@@ -576,174 +633,11 @@ Item {
                             }
                             
                             onCheckedChanged: {
-                                commandRunner.command = ["hyprctl", "keyword", "animations:enabled", animationsSwitch.checked ? "true" : "false"]
-                                commandRunner.callback = null
-                                commandRunner.running = true
+                                Dat.ThemeSettings.setAnimationsEnabled(checked)
                             }
                         }
                         
                         Item { Layout.fillWidth: true }
-                    }
-                }
-            }
-            
-            // === WALLPAPER SECTION ===
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 180
-                color: Dat.Colors.color.surface_variant
-                radius: 12
-                border.color: Dat.Colors.color.primary
-                border.width: 1
-                
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 12
-                    
-                    Text {
-                        text: "Wallpaper"
-                        color: Dat.Colors.color.on_surface
-                        font.pixelSize: 16
-                        font.bold: true
-                    }
-                    
-                    // Select Wallpaper Button
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-                        color: selectWallMouse.containsMouse ? Dat.Colors.color.primary : Dat.Colors.color.surface
-                        radius: 6
-                        border.color: Dat.Colors.color.primary
-                        border.width: 1
-                        
-                        Behavior on color { ColorAnimation { duration: 150 } }
-                        
-                        Text {
-                            anchors.centerIn: parent
-                            text: "Select Wallpaper"
-                            color: selectWallMouse.containsMouse ? Dat.Colors.color.on_primary : Dat.Colors.color.on_surface
-                            font.pixelSize: 12
-                        }
-                        
-                        MouseArea {
-                            id: selectWallMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                commandRunner.command = ["zenity", "--file-selection", "--title=Select Wallpaper"]
-                                commandRunner.callback = function(output) {
-                                    if (output.trim()) {
-                                        commandRunner.command = ["swww", "img", output.trim()]
-                                        commandRunner.callback = null
-                                        commandRunner.running = true
-                                    }
-                                }
-                                commandRunner.running = true
-                            }
-                        }
-                    }
-                    
-                    // Slideshow Toggle
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-                        
-                        Text {
-                            Layout.preferredWidth: 120
-                            text: "Slideshow"
-                            color: Dat.Colors.color.on_surface
-                            font.pixelSize: 12
-                        }
-                        
-                        Switch {
-                            id: slideshowSwitch
-                            checked: false
-                            
-                            indicator: Rectangle {
-                                implicitWidth: 48
-                                implicitHeight: 24
-                                x: slideshowSwitch.leftPadding
-                                y: parent.height / 2 - height / 2
-                                radius: 12
-                                color: slideshowSwitch.checked ? Dat.Colors.color.primary : Dat.Colors.color.surface
-                                border.color: Dat.Colors.color.primary
-                                border.width: 1
-                                
-                                Rectangle {
-                                    x: slideshowSwitch.checked ? parent.width - width - 2 : 2
-                                    y: 2
-                                    width: 20
-                                    height: 20
-                                    radius: 10
-                                    color: Dat.Colors.color.on_primary
-                                    
-                                    Behavior on x { NumberAnimation { duration: 150 } }
-                                }
-                            }
-                        }
-                        
-                        Item { Layout.fillWidth: true }
-                    }
-                    
-                    // Interval Slider
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-                        visible: slideshowSwitch.checked
-                        
-                        Text {
-                            Layout.preferredWidth: 120
-                            text: "Interval"
-                            color: Dat.Colors.color.on_surface
-                            font.pixelSize: 12
-                        }
-                        
-                        Slider {
-                            id: intervalSlider
-                            Layout.fillWidth: true
-                            from: 5
-                            to: 60
-                            value: 15
-                            stepSize: 5
-                            
-                            background: Rectangle {
-                                x: intervalSlider.leftPadding
-                                y: intervalSlider.topPadding + intervalSlider.availableHeight / 2 - height / 2
-                                implicitWidth: 200
-                                implicitHeight: 4
-                                width: intervalSlider.availableWidth
-                                height: implicitHeight
-                                radius: 2
-                                color: Dat.Colors.color.surface
-                                
-                                Rectangle {
-                                    width: intervalSlider.visualPosition * parent.width
-                                    height: parent.height
-                                    color: Dat.Colors.color.primary
-                                    radius: 2
-                                }
-                            }
-                            
-                            handle: Rectangle {
-                                x: intervalSlider.leftPadding + intervalSlider.visualPosition * (intervalSlider.availableWidth - width)
-                                y: intervalSlider.topPadding + intervalSlider.availableHeight / 2 - height / 2
-                                implicitWidth: 16
-                                implicitHeight: 16
-                                radius: 8
-                                color: Dat.Colors.color.primary
-                                border.color: Dat.Colors.color.on_primary
-                                border.width: 2
-                            }
-                        }
-                        
-                        Text {
-                            text: Math.round(intervalSlider.value) + " min"
-                            color: Dat.Colors.color.on_surface
-                            font.pixelSize: 12
-                            Layout.preferredWidth: 50
-                        }
                     }
                 }
             }
