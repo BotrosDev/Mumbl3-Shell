@@ -5,17 +5,19 @@ import "../../dropdownPanel/Data" as Dat
 
 PanelWindow {
     anchors {
-        bottom: true
+        top: Dat.ThemeSettings.barPosition === "top"
+        bottom: Dat.ThemeSettings.barPosition === "bottom"
         left: true
         right: true
     }
-    implicitHeight: 35
+    implicitHeight: Dat.ThemeSettings.panelWidth
     color: "transparent"
 
     Rectangle {
         id: barBackground
         anchors.fill: parent
         color: Dat.Colors.color.background
+        opacity: Dat.ThemeSettings.transparency
 
         Workspace {
             anchors.left: parent.left
@@ -32,10 +34,10 @@ PanelWindow {
             anchors.right: parent.right
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 20
+            spacing: Dat.ThemeSettings.widgetSpacing
 
             Row {
-                spacing: 32
+                spacing: Dat.ThemeSettings.widgetSpacing * 2 // Keep some relative scaling
                 anchors.verticalCenter: parent.verticalCenter
 
                 WiFi {

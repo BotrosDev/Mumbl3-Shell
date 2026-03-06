@@ -2,17 +2,19 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import QtCore
 
 QtObject {
     id: themeSettings
     
-    // Current theme state
+    // Current theme state - all with safe defaults
     property string wallpaperPath: ""
-    property string colorMode: "dark" // "dark" or "light"
-    property int paletteIndex: 0 // 0-4
+    property string colorMode: "dark"
+    property int paletteIndex: 0
     property real transparency: 0.9
     property int blurStrength: 5
-    property string barPosition: "top" // "top" or "bottom"
+    property string barPosition: "top"
+    property string fontFamily: "DejaVu Sans"
     property int panelWidth: 45
     property int widgetSpacing: 10
     property bool animationsEnabled: true
@@ -20,49 +22,62 @@ QtObject {
     // Config file location
     property string configPath: `${Quickshell.env("HOME")}/.config/quickshell/theme-settings.json`
     
-    // Process for running matugen
+    // Processes - not running by default!
     property Process matugenProcess: Process {
         running: false
+        
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (matugenProcess.exitCode !== 0) {
+                    console.error("Matugen failed:", this.text)
+                }
+            }
+        }
+        
         onExited: (code, status) => {
             if (code === 0) {
                 console.log("Matugen applied successfully")
-            } else {
-                console.error("Matugen failed:", standardError)
             }
         }
     }
     
-    // Process for running hyprctl
     property Process hyprctlProcess: Process {
         running: false
     }
     
-    // Process for file operations
     property Process fileOpProcess: Process {
         running: false
         property var callback: null
         
-        onExited: {
-            if (callback) {
-                callback(standardOutput)
-                callback = null
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (fileOpProcess.callback) {
+                    fileOpProcess.callback(this.text)
+                    fileOpProcess.callback = null
+                }
             }
         }
     }
     
-    // Load settings on startup
-    Component.onCompleted: {
-        loadSettings()
+    // Timer to delay loading until after Colors.qml is ready
+    property Timer initTimer: Timer {
+        interval: 500
+        running: true
+        repeat: false
+        
+        onTriggered: {
+            loadSettings()
+        }
     }
     
     // Apply theme with current settings
     function applyTheme() {
         if (wallpaperPath === "") {
-            console.log("No wallpaper set yet")
+            console.log("ThemeSettings: No wallpaper set, Probably The Wallpaper wasn't detected, Try Selecting a Wallpaper again, skipping matugen...")
             return
         }
         
-        console.log(`Applying theme: mode=${colorMode}, palette=${paletteIndex}`)
+        console.log(`ThemeSettings: Applying theme - mode=${colorMode}, palette=${paletteIndex}`)
         
         matugenProcess.command = [
             "matugen", 
@@ -83,7 +98,7 @@ QtObject {
         fileOpProcess.command = ["swww", "img", path, "--transition-type", "fade", "--transition-fps", "60"]
         fileOpProcess.running = true
         
-        // Generate colors (will run after swww finishes)
+        // Generate colors
         applyTheme()
         
         // Save settings
@@ -143,6 +158,28 @@ QtObject {
         
         saveSettings()
     }
+
+    // Bar position (top/bottom) – requires restart
+    function setBarPosition(position) {
+        barPosition = position
+        saveSettings()
+    }
+
+    // UI font family (from Data/Fonts.qml options)
+    function setFontFamily(family) {
+        fontFamily = family
+        saveSettings()
+    }
+
+    function setPanelWidth(width) {
+        panelWidth = width
+        saveSettings()
+    }
+
+    function setWidgetSpacing(spacing) {
+        widgetSpacing = spacing
+        saveSettings()
+    }
     
     // Save settings to JSON
     function saveSettings() {
@@ -153,6 +190,7 @@ QtObject {
             transparency: transparency,
             blurStrength: blurStrength,
             barPosition: barPosition,
+            fontFamily: fontFamily,
             panelWidth: panelWidth,
             widgetSpacing: widgetSpacing,
             animationsEnabled: animationsEnabled
@@ -165,20 +203,20 @@ QtObject {
         
         // Write to file using bash
         fileOpProcess.callback = null
-        fileOpProcess.command = ["bash", "-c", `echo '${json}' > "${configPath}"`]
+        fileOpProcess.command = ["bash", "-c", `mkdir -p ~/.config/quickshell && echo '${json}' > "${configPath}"`]
         fileOpProcess.running = true
         
-        console.log("Settings saved to", configPath)
     }
     
-    // Load settings from JSON
+    // Load settings from JSON - called AFTER delay
     function loadSettings() {
+        console.log("ThemeSettings: Attempting to load settings from", configPath)
+        
         // Read file using cat
         fileOpProcess.command = ["cat", configPath]
         fileOpProcess.callback = function(output) {
             if (output.trim() === "") {
-                console.log("Config file empty or not found, using defaults")
-                saveSettings() // Create default config
+                console.log("ThemeSettings: No config file found, using defaults")
                 return
             }
             
@@ -191,24 +229,26 @@ QtObject {
                 transparency = settings.transparency || 0.9
                 blurStrength = settings.blurStrength || 5
                 barPosition = settings.barPosition || "top"
+                fontFamily = settings.fontFamily || "DejaVu Sans"
                 panelWidth = settings.panelWidth || 45
                 widgetSpacing = settings.widgetSpacing || 10
                 animationsEnabled = settings.animationsEnabled !== undefined ? settings.animationsEnabled : true
                 
-                console.log("Settings loaded from", configPath)
+                console.log("ThemeSettings: Loaded from config")
                 
-                // Apply loaded settings
-                if (wallpaperPath !== "") {
-                    setTransparency(transparency)
-                    setBlurStrength(blurStrength)
-                    setAnimationsEnabled(animationsEnabled)
-                }
+                // Apply loaded settings (but NOT matugen - colors are already loaded)
+                if (transparency !== 0.9) setTransparency(transparency)
+                if (blurStrength !== 5) setBlurStrength(blurStrength)
+                if (animationsEnabled !== true) setAnimationsEnabled(animationsEnabled)
                 
             } catch (e) {
-                console.error("Failed to parse config:", e)
-                saveSettings() // Create fresh config
+                console.warn("ThemeSettings: Failed to parse config:", e)
             }
         }
         fileOpProcess.running = true
+    }
+    
+    Component.onCompleted: {
+        console.log("ThemeSettings: Initialized (loading deferred)")
     }
 }

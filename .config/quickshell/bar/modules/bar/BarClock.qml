@@ -34,28 +34,28 @@ Item {
                 id: hourText
                 color: Dat.Colors.color.on_surface
                 font.pixelSize: 18
-                font.family: "monospace"
+                font.family: Dat.ThemeSettings.fontFamily
             }
 
             Text {
                 text: ":"
                 color: Dat.Colors.color.primary
                 font.pixelSize: 18
-                font.family: "monospace"
+                font.family: Dat.ThemeSettings.fontFamily
             }
 
             Text {
                 id: minuteText
                 color: Dat.Colors.color.on_surface
                 font.pixelSize: 18
-                font.family: "monospace"
+                font.family: Dat.ThemeSettings.fontFamily
             }
 
             Text {
                 id: ampmText
                 color: Dat.Colors.color.primary
                 font.pixelSize: 18
-                font.family: "monospace"
+                font.family: Dat.ThemeSettings.fontFamily
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
@@ -81,7 +81,7 @@ Item {
         anchors.centerIn: parent
         color: Dat.Colors.color.primary
         font.pixelSize: 14
-        font.family: "monospace"
+        font.family: Dat.ThemeSettings.fontFamily
     }
 
 }

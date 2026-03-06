@@ -8,19 +8,9 @@ import "../../Data/" as Dat
 Item {
     id: personalizationsTab
     
-    // Load current settings from ThemeSettings
-    Component.onCompleted: {
-        // Sync UI with saved settings
-        colorModeCombo.currentIndex = Dat.ThemeSettings.colorMode === "dark" ? 0 : 1
-        paletteIndexSlider.value = Dat.ThemeSettings.paletteIndex
-        transparencySlider.value = Dat.ThemeSettings.transparency
-        blurSlider.value = Dat.ThemeSettings.blurStrength
-        barPositionCombo.currentIndex = Dat.ThemeSettings.barPosition === "top" ? 0 : 1
-        panelWidthSlider.value = Dat.ThemeSettings.panelWidth
-        spacingSlider.value = Dat.ThemeSettings.widgetSpacing
-        animationsSwitch.checked = Dat.ThemeSettings.animationsEnabled
-    }
-    
+    // UI states mapped to ThemeSettings
+    readonly property var fonts: Dat.Fonts
+
     ScrollView {
         anchors.fill: parent
         clip: true
@@ -157,6 +147,7 @@ Item {
                             id: colorModeCombo
                             Layout.fillWidth: true
                             model: ["Dark Mode", "Light Mode"]
+                            currentIndex: Dat.ThemeSettings.colorMode === "dark" ? 0 : 1
                             
                             background: Rectangle {
                                 color: Dat.Colors.color.surface
@@ -170,6 +161,43 @@ Item {
                                 color: Dat.Colors.color.on_surface
                                 leftPadding: 10
                                 verticalAlignment: Text.AlignVCenter
+                            }
+
+                            delegate: ItemDelegate {
+                                width: colorModeCombo.width - 20
+                                contentItem: Text {
+                                    text: modelData
+                                    color: parent.highlighted ? Dat.Colors.color.on_primary : Dat.Colors.color.on_surface
+                                    font.pixelSize: 12
+                                    leftPadding: 10
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                highlighted: colorModeCombo.highlightedIndex === index
+                                background: Rectangle {
+                                    color: parent.highlighted ? Dat.Colors.color.primary : "transparent"
+                                    radius: 4
+                                }
+                            }
+
+                            popup: Popup {
+                                y: colorModeCombo.height + 5
+                                width: colorModeCombo.width
+                                implicitHeight: contentItem.implicitHeight + 10
+                                padding: 5
+
+                                contentItem: ListView {
+                                    clip: true
+                                    implicitHeight: contentHeight
+                                    model: colorModeCombo.delegateModel
+                                    currentIndex: colorModeCombo.highlightedIndex
+                                }
+
+                                background: Rectangle {
+                                    color: Dat.Colors.color.surface
+                                    radius: 8
+                                    border.color: Dat.Colors.color.primary
+                                    border.width: 1
+                                }
                             }
                             
                             onCurrentIndexChanged: {
@@ -245,7 +273,7 @@ Item {
                     }
                     
                     Text {
-                        text: " Tip: Each palette shows different color schemes from your wallpaper"
+                        text: "Tip: Each palette shows different color schemes from your wallpaper"
                         color: Dat.Colors.color.on_surface
                         font.pixelSize: 10
                         opacity: 0.6
@@ -268,10 +296,10 @@ Item {
                         Slider {
                             id: transparencySlider
                             Layout.fillWidth: true
-                            from: 0.5
+                            from: 0
                             to: 1.0
-                            value: 0.9
-                            stepSize: 0.05
+                            value: Dat.ThemeSettings.transparency
+                            stepSize: 0.01
                             
                             background: Rectangle {
                                 x: transparencySlider.leftPadding
@@ -334,7 +362,7 @@ Item {
                             Layout.fillWidth: true
                             from: 0
                             to: 10
-                            value: 5
+                            value: Dat.ThemeSettings.blurStrength
                             stepSize: 1
                             
                             background: Rectangle {
@@ -386,7 +414,7 @@ Item {
             // === LAYOUT SECTION ===
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 220
+                Layout.preferredHeight: 280
                 color: Dat.Colors.color.surface_variant
                 radius: 12
                 border.color: Dat.Colors.color.primary
@@ -420,6 +448,7 @@ Item {
                             id: barPositionCombo
                             Layout.fillWidth: true
                             model: ["Top", "Bottom"]
+                            currentIndex: Dat.ThemeSettings.barPosition === "top" ? 0 : 1
                             
                             background: Rectangle {
                                 color: Dat.Colors.color.surface
@@ -434,19 +463,133 @@ Item {
                                 leftPadding: 10
                                 verticalAlignment: Text.AlignVCenter
                             }
+
+                            delegate: ItemDelegate {
+                                width: barPositionCombo.width - 20
+                                contentItem: Text {
+                                    text: modelData
+                                    color: parent.highlighted ? Dat.Colors.color.on_primary : Dat.Colors.color.on_surface
+                                    font.pixelSize: 12
+                                    leftPadding: 10
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                highlighted: barPositionCombo.highlightedIndex === index
+                                background: Rectangle {
+                                    color: parent.highlighted ? Dat.Colors.color.primary : "transparent"
+                                    radius: 4
+                                }
+                            }
+
+                            popup: Popup {
+                                y: barPositionCombo.height + 5
+                                width: barPositionCombo.width
+                                implicitHeight: contentItem.implicitHeight + 10
+                                padding: 5
+
+                                contentItem: ListView {
+                                    clip: true
+                                    implicitHeight: contentHeight
+                                    model: barPositionCombo.delegateModel
+                                    currentIndex: barPositionCombo.highlightedIndex
+                                }
+
+                                background: Rectangle {
+                                    color: Dat.Colors.color.surface
+                                    radius: 8
+                                    border.color: Dat.Colors.color.primary
+                                    border.width: 1
+                                }
+                            }
                             
                             onCurrentIndexChanged: {
                                 var position = currentIndex === 0 ? "top" : "bottom"
-                                Dat.ThemeSettings.barPosition = position
-                                Dat.ThemeSettings.saveSettings()
+                                Dat.ThemeSettings.setBarPosition(position)
                             }
                         }
                         
                         Text {
-                            text: "⚠️ Requires restart"
+                            text: "Requires restart"
                             color: Dat.Colors.color.on_surface
                             font.pixelSize: 10
                             opacity: 0.5
+                        }
+                    }
+
+                    // Font (options from Data/Fonts.qml)
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+
+                        Text {
+                            Layout.preferredWidth: 120
+                            text: "Font"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 12
+                        }
+                        ComboBox {
+                            id: fontCombo
+                            Layout.fillWidth: true
+                            model: Dat.Fonts.fontDisplayNames
+                            currentIndex: Math.max(0, Dat.Fonts.fontFamilies.indexOf(Dat.ThemeSettings.fontFamily))
+
+                            background: Rectangle {
+                                color: Dat.Colors.color.surface
+                                radius: 6
+                                border.color: Dat.Colors.color.primary
+                                border.width: 1
+                            }
+
+                            contentItem: Text {
+                                text: parent.displayText
+                                color: Dat.Colors.color.on_surface
+                                font.family: Dat.ThemeSettings.fontFamily
+                                leftPadding: 10
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            // Customize how each option looks in the dropdown (each in its own font)
+                            delegate: ItemDelegate {
+                                width: fontCombo.width - 20
+                                contentItem: Text {
+                                    text: modelData
+                                    color: parent.highlighted ? Dat.Colors.color.on_primary : Dat.Colors.color.on_surface
+                                    font.family: index >= 0 && index < Dat.Fonts.fontFamilies.length ? Dat.Fonts.fontFamilies[index] : ""
+                                    font.pixelSize: 12
+                                    leftPadding: 10
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                highlighted: fontCombo.highlightedIndex === index
+                                background: Rectangle {
+                                    color: parent.highlighted ? Dat.Colors.color.primary : "transparent"
+                                    radius: 4
+                                }
+                            }
+
+                            popup: Popup {
+                                y: fontCombo.height + 5
+                                width: fontCombo.width
+                                implicitHeight: Math.min(contentItem.implicitHeight + 10, 400) // limit height
+                                padding: 5
+
+                                contentItem: ListView {
+                                    clip: true
+                                    implicitHeight: contentHeight
+                                    model: fontCombo.delegateModel
+                                    currentIndex: fontCombo.highlightedIndex
+                                }
+
+                                background: Rectangle {
+                                    color: Dat.Colors.color.surface
+                                    radius: 8
+                                    border.color: Dat.Colors.color.primary
+                                    border.width: 1
+                                }
+                            }
+
+                            onCurrentIndexChanged: {
+                                if (currentIndex >= 0 && currentIndex < Dat.Fonts.fontFamilies.length)
+                                    Dat.ThemeSettings.setFontFamily(Dat.Fonts.fontFamilies[currentIndex])
+                            }
                         }
                     }
                     
@@ -467,8 +610,8 @@ Item {
                             Layout.fillWidth: true
                             from: 30
                             to: 60
-                            value: 45
-                            stepSize: 5
+                            value: Dat.ThemeSettings.panelWidth
+                            stepSize: 1
                             
                             background: Rectangle {
                                 x: panelWidthSlider.leftPadding
@@ -499,11 +642,8 @@ Item {
                                 border.width: 2
                             }
                             
-                            onPressedChanged: {
-                                if (!pressed) {
-                                    Dat.ThemeSettings.panelWidth = Math.round(value)
-                                    Dat.ThemeSettings.saveSettings()
-                                }
+                            onMoved: {
+                                Dat.ThemeSettings.setPanelWidth(Math.round(value))
                             }
                         }
                         
@@ -514,12 +654,6 @@ Item {
                             Layout.preferredWidth: 45
                         }
                         
-                        Text {
-                            text: "⚠️"
-                            color: Dat.Colors.color.on_surface
-                            font.pixelSize: 10
-                            opacity: 0.5
-                        }
                     }
                     
                     // Widget Spacing
@@ -539,8 +673,8 @@ Item {
                             Layout.fillWidth: true
                             from: 5
                             to: 20
-                            value: 10
-                            stepSize: 5
+                            value: Dat.ThemeSettings.widgetSpacing
+                            stepSize: 1
                             
                             background: Rectangle {
                                 x: spacingSlider.leftPadding
@@ -571,11 +705,8 @@ Item {
                                 border.width: 2
                             }
                             
-                            onPressedChanged: {
-                                if (!pressed) {
-                                    Dat.ThemeSettings.widgetSpacing = Math.round(value)
-                                    Dat.ThemeSettings.saveSettings()
-                                }
+                            onMoved: {
+                                Dat.ThemeSettings.setWidgetSpacing(Math.round(value))
                             }
                         }
                         
@@ -586,12 +717,6 @@ Item {
                             Layout.preferredWidth: 45
                         }
                         
-                        Text {
-                            text: "⚠️"
-                            color: Dat.Colors.color.on_surface
-                            font.pixelSize: 10
-                            opacity: 0.5
-                        }
                     }
                     
                     // Enable Animations
@@ -608,7 +733,7 @@ Item {
                         
                         Switch {
                             id: animationsSwitch
-                            checked: true
+                            checked: Dat.ThemeSettings.animationsEnabled
                             
                             indicator: Rectangle {
                                 implicitWidth: 48
@@ -632,7 +757,7 @@ Item {
                                 }
                             }
                             
-                            onCheckedChanged: {
+                            onToggled: {
                                 Dat.ThemeSettings.setAnimationsEnabled(checked)
                             }
                         }
