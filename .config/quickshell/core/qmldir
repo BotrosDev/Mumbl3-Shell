@@ -1,0 +1,10 @@
+# Quickshell Data singletons
+# DO NOT delete any line - all are required!
+
+singleton Colors 1.0 Colors.qml
+singleton Fonts 1.0 Fonts.qml
+singleton Clock 1.0 Clock.qml
+singleton MaterialEasing 1.0 MaterialEasing.qml
+singleton ThemeSettings 1.0 ThemeSettings.qml
+singleton Globals 1.0 Globals.qml
+singleton NotifServer 1.0 NotifServer.qml
