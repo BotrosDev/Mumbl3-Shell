@@ -59,8 +59,8 @@ Item {
                                 top: barPositionCombo.currentIndex === 0 || barPositionCombo.currentIndex === 2 || barPositionCombo.currentIndex === 3 ? parent.top : undefined
                                 bottom: barPositionCombo.currentIndex === 1 || barPositionCombo.currentIndex === 2 || barPositionCombo.currentIndex === 3 ? parent.bottom : undefined
                             }
-                            width: barPositionCombo.currentIndex === 2 || barPositionCombo.currentIndex === 3 ? 30 : undefined
-                            height: barPositionCombo.currentIndex === 0 || barPositionCombo.currentIndex === 1 ? 30 : undefined
+                            width: barPositionCombo.currentIndex === 2 || barPositionCombo.currentIndex === 3 ? barThicknessSlider.value / 1.5 : undefined
+                            height: barPositionCombo.currentIndex === 0 || barPositionCombo.currentIndex === 1 ? barThicknessSlider.value / 1.5 : undefined
                             color: Dat.Colors.color.primary
                             opacity: transparencySlider.value
                             
@@ -634,38 +634,38 @@ Text {
                         }
                     }
                     
-                    // Panel Width
+                    // Bar Thickness
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
                         
                         Text {
                             Layout.preferredWidth: 120
-                            text: "Panel Width"
+                            text: "Bar Thickness"
                             color: Dat.Colors.color.on_surface
                             font.pixelSize: 12
                         }
                         
                         Slider {
-                            id: panelWidthSlider
+                            id: barThicknessSlider
                             Layout.fillWidth: true
-                            from: 30
-                            to: 60
-                            value: Dat.ThemeSettings.panelWidth
+                            from: 20
+                            to: 100
+                            value: Dat.ThemeSettings.barThickness
                             stepSize: 1
                             
                             background: Rectangle {
-                                x: panelWidthSlider.leftPadding
-                                y: panelWidthSlider.topPadding + panelWidthSlider.availableHeight / 2 - height / 2
+                                x: barThicknessSlider.leftPadding
+                                y: barThicknessSlider.topPadding + barThicknessSlider.availableHeight / 2 - height / 2
                                 implicitWidth: 200
                                 implicitHeight: 4
-                                width: panelWidthSlider.availableWidth
+                                width: barThicknessSlider.availableWidth
                                 height: implicitHeight
                                 radius: 2
                                 color: Dat.Colors.color.surface
                                 
                                 Rectangle {
-                                    width: panelWidthSlider.visualPosition * parent.width
+                                    width: barThicknessSlider.visualPosition * parent.width
                                     height: parent.height
                                     color: Dat.Colors.color.primary
                                     radius: 2
@@ -673,8 +673,8 @@ Text {
                             }
                             
                             handle: Rectangle {
-                                x: panelWidthSlider.leftPadding + panelWidthSlider.visualPosition * (panelWidthSlider.availableWidth - width)
-                                y: panelWidthSlider.topPadding + panelWidthSlider.availableHeight / 2 - height / 2
+                                x: barThicknessSlider.leftPadding + barThicknessSlider.visualPosition * (barThicknessSlider.availableWidth - width)
+                                y: barThicknessSlider.topPadding + barThicknessSlider.availableHeight / 2 - height / 2
                                 implicitWidth: 16
                                 implicitHeight: 16
                                 radius: 8
@@ -684,12 +684,12 @@ Text {
                             }
                             
                             onMoved: {
-                                Dat.ThemeSettings.setPanelWidth(Math.round(value))
+                                Dat.ThemeSettings.setBarThickness(Math.round(value))
                             }
                         }
                         
                         Text {
-                            text: Math.round(panelWidthSlider.value) + "px"
+                            text: Math.round(barThicknessSlider.value) + "px"
                             color: Dat.Colors.color.on_surface
                             font.pixelSize: 12
                             Layout.preferredWidth: 45
@@ -713,7 +713,7 @@ Text {
                             id: spacingSlider
                             Layout.fillWidth: true
                             from: 5
-                            to: 20
+                            to: 40
                             value: Dat.ThemeSettings.widgetSpacing
                             stepSize: 1
                             

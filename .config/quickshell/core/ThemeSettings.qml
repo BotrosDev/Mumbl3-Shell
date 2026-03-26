@@ -18,8 +18,7 @@ QtObject {
     property string barPosition_R: "right"
     property string barPosition_L: "left"
     property string fontFamily: "DejaVu Sans"
-    property int panelWidth: 45
-    property int panelThickness: 45
+    property int barThickness: 45
     property int widgetSpacing: 10
     property bool animationsEnabled: true
     
@@ -182,8 +181,8 @@ QtObject {
         saveSettings()
     }
 
-    function setPanelWidth(width) {
-        panelWidth = width
+    function setBarThickness(width) {
+        barThickness = width
         saveSettings()
     }
 
@@ -205,7 +204,7 @@ QtObject {
             barPosition_R: barPosition_R,
             barPosition_L: barPosition_L,
             fontFamily: fontFamily,
-            panelWidth: panelWidth,
+            barThickness: barThickness,
             widgetSpacing: widgetSpacing,
             animationsEnabled: animationsEnabled
         }
@@ -246,7 +245,7 @@ QtObject {
                 barPosition_R = settings.barPosition_R || ""
                 barPosition_L = settings.barPosition_L || ""
                 fontFamily = settings.fontFamily || "DejaVu Sans"
-                panelWidth = settings.panelWidth || 45
+                barThickness = settings.barThickness || settings.panelWidth || 45
                 widgetSpacing = settings.widgetSpacing || 10
                 animationsEnabled = settings.animationsEnabled !== undefined ? settings.animationsEnabled : true
                 

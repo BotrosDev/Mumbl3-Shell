@@ -1,57 +1,73 @@
 import Quickshell
 import QtQuick
 import Quickshell.Io
-import "../../core" as Dat
+import "../../core" as Core
 
 Item {
     id: wifiContainer
-    width: wifiRow.width
-    height: wifiRow.height
-    
+    // Scales with bar thickness; stays comfortably inside the bar
+    readonly property int pillHeight: Math.max(18, Math.min(Core.ThemeSettings.barThickness - 14, 40))
+    width: pillHeight
+    height: pillHeight
+
     property string ssid: "Disconnected"
     property int strength: 0
     property bool connected: false
-    
-    Row {
-        id: wifiRow
-        spacing: 5
-        Text {
-            id: wifiIcon
-            text: {
-                if (!connected) return "󰤮"
-                if (strength >= 75) return "󰤨"
-                if (strength >= 50) return "󰤥"
-                if (strength >= 25) return "󰤢"
-                return "󰤟"
-            }
-            color: connected ? Dat.Colors.color.primary : Dat.Colors.color.on_primary
-            font.pixelSize: 16
-            font.family: "monospace"
-            anchors.verticalCenter: parent.verticalCenter
+
+    Rectangle {
+        id: pill
+        anchors.fill: parent
+        radius: width / 2
+        color: wifiMouseArea.containsMouse ? Core.Colors.color.primary : "transparent"
+        border.color: connected ? Core.Colors.color.primary : Core.Colors.color.error
+        border.width: 1
+
+        Behavior on color {
+            ColorAnimation { duration: 120 }
         }
     }
 
-    Process {
-    id: wifiManagerProc
-    command: ["sh", "-c", "nm-connection-editor"]
+    Text {
+        id: wifiIcon
+        anchors.centerIn: parent
+        text: {
+            if (!connected) return "󰤮"
+            if (strength >= 75) return "󰤨"
+            if (strength >= 50) return "󰤥"
+            if (strength >= 25) return "󰤢"
+            return "󰤟"
+        }
+        color: wifiMouseArea.containsMouse
+            ? Core.Colors.color.on_primary
+            : (connected ? Core.Colors.color.primary : Core.Colors.color.error)
+        font.pixelSize: Math.max(10, wifiContainer.pillHeight - 12)
+        font.family: "monospace"
+
+        Behavior on color {
+            ColorAnimation { duration: 120 }
+        }
     }
 
+    // Provided by Bar.qml from the shell-level instance
+    property var popup: null
+
     MouseArea {
+        id: wifiMouseArea
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        
+
         onClicked: {
-            wifiManagerProc.running = true
+            if (!popup) return
+            popup.visible ? popup.visible = false : popup.openAt(wifiContainer)
         }
     }
-    
-    // Get WiFi status
+
     Process {
         id: wifiProc
         command: ["sh", "-c", "nmcli -t -f active,ssid,signal dev wifi | grep '^yes'"]
         running: true
-        
+
         stdout: StdioCollector {
             onStreamFinished: {
                 var output = this.text.trim()
@@ -67,17 +83,16 @@ Item {
                 }
             }
         }
-        
+
         stderr: StdioCollector {
             onStreamFinished: {
-                // If nmcli fails, try iwgetid as fallback
                 if (this.text.trim().length > 0) {
                     wifiContainer.connected = false
                 }
             }
         }
     }
-    
+
     Timer {
         interval: 30000
         running: true

@@ -1,92 +1,97 @@
 import Quickshell
 import QtQuick
 import Quickshell.Io
-import "../../core" as Dat
+import "../../core" as Core
 
 Item {
     id: volumeContainer
-    width: volumeRow.width
-    height: volumeRow.height
-    
+    readonly property int pillHeight: Math.max(18, Math.min(Core.ThemeSettings.barThickness - 14, 40))
+    width: pillHeight
+    height: pillHeight
+
     property int volume: 0
     property bool muted: false
-    
-    Row {
-        id: volumeRow
-        spacing: 5
-        
-        Text {
-            id: volumeIcon
-            text: {
-                if (muted) return "󰖁"
-                if (volume >= 70) return "󰕾"
-                if (volume >= 30) return "󰖀"
-                if (volume > 0) return "󰕿"
-                return "󰖁"
-            }
-            color: muted ? Dat.Colors.color.on_primary : Dat.Colors.color.primary
-            font.pixelSize: 16
-            font.family: "monospace"
-            anchors.verticalCenter: parent.verticalCenter
-        }
-        
-        Text {
-            id: volumeText
-            text: volume + "%"
-            color: Dat.Colors.color.on_surface
-            font.pixelSize: 12
-            font.family: "monospace"
-            anchors.verticalCenter: parent.verticalCenter
+    readonly property bool isVertical: Core.ThemeSettings.barPosition_L !== "" && Core.ThemeSettings.barPosition_R === ""
+
+    function updateVolume() {
+        volumeProc.running = true
+        muteStatusProc.running = true
+    }
+
+    Rectangle {
+        id: pill
+        anchors.fill: parent
+        radius: width / 2
+        color: volMouseArea.containsMouse ? Core.Colors.color.primary : "transparent"
+        border.color: muted ? Core.Colors.color.error : Core.Colors.color.primary
+        border.width: 1
+
+        Behavior on color {
+            ColorAnimation { duration: 120 }
         }
     }
-    
+
+    Text {
+        id: volumeIcon
+        anchors.centerIn: parent
+        text: {
+            if (muted) return "󰖁"
+            if (volume >= 70) return "󰕾"
+            if (volume >= 30) return "󰖀"
+            if (volume > 0) return "󰕿"
+            return "󰖁"
+        }
+        color: volMouseArea.containsMouse
+            ? Core.Colors.color.on_primary
+            : (muted ? Core.Colors.color.error : Core.Colors.color.primary)
+        font.pixelSize: Math.max(10, volumeContainer.pillHeight - 12)
+        font.family: "monospace"
+
+        Behavior on color {
+            ColorAnimation { duration: 120 }
+        }
+    }
+
+    property var popup: null
+
     MouseArea {
+        id: volMouseArea
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        
+
         onClicked: {
-            muteProc.running = true
-        }
-        
-        onWheel: (wheel) => {
-            if (wheel.angleDelta.y > 0) {
-                volumeUpProc.running = true
-            } else {
-                volumeDownProc.running = true
-            }
+            if (!popup) return
+            popup.visible ? popup.visible = false : popup.openAt(volumeContainer)
         }
     }
-    
-    // Get current volume using pactl (PulseAudio/PipeWire)
+
     Process {
         id: volumeProc
         command: ["sh", "-c", "pactl get-sink-volume @DEFAULT_SINK@ | grep -oP '\\d+%' | head -1 | tr -d '%'"]
         running: true
-        
+
         stdout: StdioCollector {
             onStreamFinished: {
                 var vol = parseInt(this.text.trim())
                 volumeContainer.volume = isNaN(vol) ? 0 : vol
             }
         }
-        
+
         stderr: StdioCollector {
             onStreamFinished: {
-                // Fallback to amixer if pactl fails
                 if (this.text.trim().length > 0) {
                     amixerProc.running = true
                 }
             }
         }
     }
-    
-    // Fallback to amixer
+
     Process {
         id: amixerProc
         command: ["sh", "-c", "amixer get Master | grep -oP '\\d+%' | head -1 | tr -d '%'"]
         running: false
-        
+
         stdout: StdioCollector {
             onStreamFinished: {
                 var vol = parseInt(this.text.trim())
@@ -94,26 +99,24 @@ Item {
             }
         }
     }
-    
-    // Check mute status
+
     Process {
         id: muteStatusProc
         command: ["sh", "-c", "pactl get-sink-mute @DEFAULT_SINK@ | grep -q 'yes' && echo 1 || echo 0"]
         running: true
-        
+
         stdout: StdioCollector {
             onStreamFinished: {
                 volumeContainer.muted = parseInt(this.text.trim()) === 1
             }
         }
     }
-    
-    // Toggle mute
+
     Process {
         id: muteProc
         command: ["pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle"]
         running: false
-        
+
         onRunningChanged: {
             if (!running) {
                 muteStatusProc.running = true
@@ -121,29 +124,27 @@ Item {
             }
         }
     }
-    
-    // Increase volume
+
     Process {
         id: volumeUpProc
         command: ["pactl", "set-sink-volume", "@DEFAULT_SINK@", "+5%"]
         running: false
-        
+
         onRunningChanged: {
             if (!running) volumeProc.running = true
         }
     }
-    
-    // Decrease volume
+
     Process {
         id: volumeDownProc
         command: ["pactl", "set-sink-volume", "@DEFAULT_SINK@", "-5%"]
         running: false
-        
+
         onRunningChanged: {
             if (!running) volumeProc.running = true
         }
     }
-    
+
     Timer {
         interval: 5000
         running: true

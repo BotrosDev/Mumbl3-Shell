@@ -13,11 +13,11 @@ Item {
 
     signal closeRequested()   
     
-    // A wallapper Custom Path by user. 
     property string wallpapersUserPath: "Wallpapers"
     property string wallpaperDir: StandardPaths.writableLocation(StandardPaths.PicturesLocation) + "/" + wallpapersUserPath
 
     function setWallpaper(path) {
+        // Let ThemeSettings handle everything
         Dat.ThemeSettings.setWallpaper(path)
     
         closeRequested()   
@@ -52,7 +52,7 @@ Item {
                 font.family: "monospace"
             }
             
-            //grid view
+            // Scrollable grid view
             Rectangle {
                 width: parent.width
                 height: parent.height - 80
@@ -114,8 +114,9 @@ Item {
                                     fillMode: Image.PreserveAspectCrop
                                     asynchronous: true
                                     smooth: true
-                                    cache: false  // Caching +100 images is bad..
+                                    cache: false  // Don't cache to avoid memory issues with many images
                                     
+                                    // Show loading indicator
                                     Text {
                                         anchors.centerIn: parent
                                         text: "Loading..."
@@ -123,6 +124,7 @@ Item {
                                         visible: parent.status === Image.Loading
                                     }
                                     
+                                    // Show error if image fails to load
                                     Text {
                                         anchors.centerIn: parent
                                         text: "Image failed to load :("
@@ -139,7 +141,8 @@ Item {
                                     }
                                 }
                             }
-                    
+                            
+                            // Filename
                             Text {
                                 width: parent.width
                                 text: rect.fileName
@@ -164,6 +167,7 @@ Item {
                     }
                 }
                 
+                // Empty state
                 Text {
                     visible: folderModel.count === 0
                     anchors.centerIn: parent
@@ -194,8 +198,6 @@ Item {
     }
     
     // Process to generate colors with matugen
-    // Better not touch, one wrong move, and everything gets white, you will get flashed rightaway.
-    // ... Perchance ... //
     Process {
         id: matugenProc
         running: false

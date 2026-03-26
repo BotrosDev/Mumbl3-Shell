@@ -1,32 +1,42 @@
 import Quickshell
 import QtQuick
 import "../widgets"
-import "../../core" as Dat
+import "../../core" as Core
 
 PanelWindow {
     id: barWindow
     
+    // Shell-level popup references injected from shell.qml
+    property var wifiPopupRef:    null
+    property var btPopupRef:      null
+    property var volPopupRef:     null
+    property var batPopupRef:     null
+
+    signal widgetsLoaded()
+
     // Horizontal = Anchored to both Left and Right (Top or Bottom positions)
-    readonly property bool isHorizontal: Dat.ThemeSettings.barPosition_L !== "" && Dat.ThemeSettings.barPosition_R !== ""
+    readonly property bool isHorizontal: Core.ThemeSettings.barPosition_L !== "" && Core.ThemeSettings.barPosition_R !== ""
     
     anchors {
-        top: Dat.ThemeSettings.barPosition_T === "top"
-        bottom: Dat.ThemeSettings.barPosition_B === "bottom"
-        left: Dat.ThemeSettings.barPosition_L === "left"
-        right: Dat.ThemeSettings.barPosition_R === "right"
+        top: Core.ThemeSettings.barPosition_T === "top"
+        bottom: Core.ThemeSettings.barPosition_B === "bottom"
+        left: Core.ThemeSettings.barPosition_L === "left"
+        right: Core.ThemeSettings.barPosition_R === "right"
     }
     
-    // Set fixed dimension on the cross-axis, 0 on the stretching axis to avoid default 100px
-    implicitHeight: isHorizontal ? Dat.ThemeSettings.panelWidth : 0
-    implicitWidth: isHorizontal ? 0 : Dat.ThemeSettings.panelWidth
+    // Set fixed dimension on the cross-axis, .. ty ma7moud for debugging <3
+    implicitHeight: isHorizontal ? Core.ThemeSettings.barThickness : 0
+    implicitWidth: isHorizontal ? 0 : Core.ThemeSettings.barThickness
+
     
     color: "transparent"
 
     Rectangle {
         id: barBackground
         anchors.fill: parent
-        color: Dat.Colors.color.background
-        opacity: Dat.ThemeSettings.transparency
+        color: Core.Colors.color.background
+        opacity: Core.ThemeSettings.transparency
+        radius: 20
 
         Workspace { id: workspace }
         BarClock { id: clock }
@@ -40,6 +50,7 @@ PanelWindow {
                 id: widgetsLayout
                 anchors.centerIn: parent
                 sourceComponent: isHorizontal ? horizontalWidgets : verticalWidgets
+                onLoaded: barWindow.widgetsLoaded()
             }
         }
 
@@ -104,22 +115,22 @@ PanelWindow {
     Component {
         id: horizontalWidgets
         Row {
-            spacing: Dat.ThemeSettings.widgetSpacing
-            WiFi { anchors.verticalCenter: parent.verticalCenter }
-            Bluetooth { anchors.verticalCenter: parent.verticalCenter }
-            Volume { anchors.verticalCenter: parent.verticalCenter }
-            Battery { anchors.verticalCenter: parent.verticalCenter }
+            spacing: Core.ThemeSettings.widgetSpacing
+            WiFi      { anchors.verticalCenter: parent.verticalCenter; popup: barWindow.wifiPopupRef }
+            Bluetooth { anchors.verticalCenter: parent.verticalCenter; popup: barWindow.btPopupRef   }
+            Volume    { anchors.verticalCenter: parent.verticalCenter; popup: barWindow.volPopupRef  }
+            Battery   { anchors.verticalCenter: parent.verticalCenter; popup: barWindow.batPopupRef  }
         }
     }
 
     Component {
         id: verticalWidgets
         Column {
-            spacing: Dat.ThemeSettings.widgetSpacing
-            WiFi { anchors.horizontalCenter: parent.horizontalCenter }
-            Bluetooth { anchors.horizontalCenter: parent.horizontalCenter }
-            Volume { anchors.horizontalCenter: parent.horizontalCenter }
-            Battery { anchors.horizontalCenter: parent.horizontalCenter }
+            spacing: Core.ThemeSettings.widgetSpacing
+            WiFi      { anchors.horizontalCenter: parent.horizontalCenter; popup: barWindow.wifiPopupRef }
+            Bluetooth { anchors.horizontalCenter: parent.horizontalCenter; popup: barWindow.btPopupRef   }
+            Volume    { anchors.horizontalCenter: parent.horizontalCenter; popup: barWindow.volPopupRef  }
+            Battery   { anchors.horizontalCenter: parent.horizontalCenter; popup: barWindow.batPopupRef  }
         }
     }
 }

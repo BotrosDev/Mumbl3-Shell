@@ -11,7 +11,7 @@ Item {
     
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
-    anchors.bottomMargin: Dat.ThemeSettings.panelWidth + 5 // Above the bar
+    anchors.bottomMargin: Dat.ThemeSettings.barThickness + 5 // Above the bar
     
     width: 600
     height: 400

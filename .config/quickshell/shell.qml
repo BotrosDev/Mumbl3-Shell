@@ -1,12 +1,10 @@
-//@ pragma UseQApplication
-
 import QtQuick
 import Quickshell
 import "components/bar"
 import "components/widgets"
 import "components/dropdown"
-import "components/dropdown"
 import "components/generics"
+
 
 ShellRoot {
     id: root
@@ -36,8 +34,16 @@ ShellRoot {
 
     NotificationPopups {}
 
+    WiFiPopup      { id: wifiPopup  }
+    BluetoothPopup { id: btPopup    }
+    VolumePopup    { id: volumePopup  }
+    BatteryPopup   { id: batteryPopup }
+
     Bar {
         id: bar
+        wifiPopupRef: wifiPopup
+        btPopupRef:   btPopup
+        volPopupRef:  volumePopup
+        batPopupRef:  batteryPopup
     }
-
 }

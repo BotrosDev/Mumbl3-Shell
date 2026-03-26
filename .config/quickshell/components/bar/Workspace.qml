@@ -1,19 +1,19 @@
 import Quickshell
 import QtQuick
 import Quickshell.Hyprland
-import "../../core" as Dat 
+import "../../core" as Core 
 
 Rectangle {
     id: wsContainer
     
-    readonly property bool isHorizontal: Dat.ThemeSettings.barPosition_L !== "" && Dat.ThemeSettings.barPosition_R !== ""
+    readonly property bool isHorizontal: Core.ThemeSettings.barPosition_L !== "" && Core.ThemeSettings.barPosition_R !== ""
     
     // Size based on content and orientation
     width: isHorizontal ? (loader.item ? loader.item.width + 20 : 120) : 36
     height: isHorizontal ? 28 : (loader.item ? loader.item.height + 20 : 120)
     
     radius: 14
-    color: Dat.Colors.color.primary
+    color: Core.Colors.color.primary
     
     property bool expanded: false
     property int totalWorkspaces: 10
@@ -62,7 +62,7 @@ Rectangle {
             height: isHorizontal ? 12 : (isFocused ? 32 : (hasWindows ? 18 : 14))
             
             radius: 10
-            color: isFocused ? Dat.Colors.color.on_surface : (hasWindows ? Dat.Colors.color.surface_variant : Dat.Colors.color.on_surface)
+            color: isFocused ? Core.Colors.color.on_surface : (hasWindows ? Core.Colors.color.surface_variant : Core.Colors.color.on_surface)
 
             Behavior on width { NumberAnimation { duration: 250 } }
             Behavior on height { NumberAnimation { duration: 250 } }
@@ -84,11 +84,11 @@ Rectangle {
             width: isHorizontal ? 14 : 12
             height: isHorizontal ? 12 : 14
             radius: 10
-            color: Dat.Colors.color.inverse_primary
+            color: Core.Colors.color.inverse_primary
             Text { 
                 anchors.centerIn: parent
                 text: wsContainer.expanded ? "−" : "+"
-                color: Dat.Colors.color.on_surface
+                color: Core.Colors.color.on_surface
                 font.pixelSize: 10
                 font.bold: true 
             }
