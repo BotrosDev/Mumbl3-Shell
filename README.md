@@ -1,4 +1,12 @@
 # Mumbl3-Shell
+### IMPORTAND 
+```
+> Currently on hold, our dev team are not currently free for the project, and will start working on it again in somewhere between 21/5/2026 ~ 1/7/2026
+> The project is intended to be finished before 2027.
+> it will be fully functional and Extremely polished. this might take place somewhere in 2027
+```
+---
+
 A Frieren-themed Quickshell config for Hyprland featuring dropdown panel, media controls, dynamic colors, and more. Pure QML on Arch Linux.
 <div align="center">
 
