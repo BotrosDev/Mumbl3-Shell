@@ -13,8 +13,10 @@ Item {
         running: false
         property var callback: null
         
+        stdout: StdioCollector { id: commandOutput }
+
         onExited: {
-            if (callback) callback(standardOutput)
+            if (callback) callback(commandOutput.text)
         }
     }
     

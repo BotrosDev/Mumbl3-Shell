@@ -11,6 +11,62 @@ Item {
     // UI states mapped to ThemeSettings
     readonly property var fonts: Dat.Fonts
 
+    Process {
+        id: commandRunner
+        running: false
+        property var callback: null
+        
+        stdout: StdioCollector { id: commandOutput }
+
+        onExited: {
+            if (callback) callback(commandOutput.text)
+        }
+    }
+
+    property var monitorInfo: []
+    property string currentMonitor: ""
+
+    function updateMonitorInfo() {
+        commandRunner.command = ["hyprctl", "monitors", "-j"]
+        commandRunner.callback = function(output) {
+            try {
+                var data = JSON.parse(output)
+                monitorInfo = data
+                if (data.length > 0) {
+                    currentMonitor = data[0].name
+                    // Update UI with first monitor's data
+                    resolutionCombo.model = getResolutionModel(data[0])
+                    var resStr = data[0].width + "x" + data[0].height
+                    var resIdx = resolutionCombo.model.indexOf(resStr)
+                    if (resIdx !== -1) resolutionCombo.currentIndex = resIdx
+                    
+                    refreshCombo.model = getRefreshModel(data[0])
+                    var refStr = Math.round(data[0].refreshRate) + "Hz"
+                    var refIdx = refreshCombo.model.indexOf(refStr)
+                    if (refIdx !== -1) refreshCombo.currentIndex = refIdx
+                    
+                    scaleSlider.value = data[0].scale
+                }
+            } catch (e) {
+                console.warn("Error parsing monitor info:", e)
+            }
+        }
+        commandRunner.running = true
+    }
+
+    function getResolutionModel(mon) {
+        // This is a simplification, real logic would parse mon.availableModes
+        return [mon.width + "x" + mon.height]
+    }
+
+    function getRefreshModel(mon) {
+        return [Math.round(mon.refreshRate) + "Hz"]
+    }
+
+    Component.onCompleted: {
+        updateMonitorInfo()
+    }
+
     ScrollView {
         anchors.fill: parent
         clip: true
@@ -126,6 +182,236 @@ Item {
                             color: Dat.Colors.color.on_surface
                             font.pixelSize: 10
                             opacity: 0.6
+                        }
+                    }
+                }
+            }
+            
+            // === DISPLAY SECTION ===
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 240
+                color: Dat.Colors.color.surface_variant
+                radius: 12
+                border.color: Dat.Colors.color.primary
+                border.width: 1
+                
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: 12
+                    
+                    Text {
+                        text: "Display"
+                        color: Dat.Colors.color.on_surface
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+                    
+                    // Resolution
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        
+                        Text {
+                            Layout.preferredWidth: 120
+                            text: "Resolution"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 12
+                        }
+                        
+                        ComboBox {
+                            id: resolutionCombo
+                            Layout.fillWidth: true
+                            model: ["1920x1080"]
+                            background: Rectangle {
+                                color: Dat.Colors.color.surface
+                                radius: 6
+                                border.color: Dat.Colors.color.primary
+                                border.width: 1
+                            }
+                            contentItem: Text {
+                                text: parent.displayText
+                                color: Dat.Colors.color.on_surface
+                                leftPadding: 10
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            onActivated: {
+                                // apply with hyprctl
+                                var mon = currentMonitor || "eDP-1"
+                                var refr = refreshCombo.currentText.replace("Hz", "")
+                                commandRunner.command = ["hyprctl", "keyword", "monitor", `${mon},${currentText}@${refr},auto,${scaleSlider.value}`]
+                                commandRunner.running = true
+                            }
+                        }
+                    }
+                    
+                    // Refresh Rate
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        
+                        Text {
+                            Layout.preferredWidth: 120
+                            text: "Refresh Rate"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 12
+                        }
+                        
+                        ComboBox {
+                            id: refreshCombo
+                            Layout.fillWidth: true
+                            model: ["60Hz"]
+                            background: Rectangle {
+                                color: Dat.Colors.color.surface
+                                radius: 6
+                                border.color: Dat.Colors.color.primary
+                                border.width: 1
+                            }
+                            contentItem: Text {
+                                text: parent.displayText
+                                color: Dat.Colors.color.on_surface
+                                leftPadding: 10
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            onActivated: {
+                                var mon = currentMonitor || "eDP-1"
+                                var refr = currentText.replace("Hz", "")
+                                commandRunner.command = ["hyprctl", "keyword", "monitor", `${mon},${resolutionCombo.currentText}@${refr},auto,${scaleSlider.value}`]
+                                commandRunner.running = true
+                            }
+                        }
+                    }
+                    
+                    // Scale Factor
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        
+                        Text {
+                            Layout.preferredWidth: 120
+                            text: "Scale Factor"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 12
+                        }
+                        
+                        Slider {
+                            id: scaleSlider
+                            Layout.fillWidth: true
+                            from: 1.0
+                            to: 2.0
+                            value: 1.0
+                            stepSize: 0.25
+                            
+                            background: Rectangle {
+                                x: scaleSlider.leftPadding
+                                y: scaleSlider.topPadding + scaleSlider.availableHeight / 2 - height / 2
+                                implicitWidth: 200
+                                implicitHeight: 4
+                                width: scaleSlider.availableWidth
+                                height: implicitHeight
+                                radius: 2
+                                color: Dat.Colors.color.surface
+                                
+                                Rectangle {
+                                    width: scaleSlider.visualPosition * parent.width
+                                    height: parent.height
+                                    color: Dat.Colors.color.primary
+                                    radius: 2
+                                }
+                            }
+                            
+                            handle: Rectangle {
+                                x: scaleSlider.leftPadding + scaleSlider.visualPosition * (scaleSlider.availableWidth - width)
+                                y: scaleSlider.topPadding + scaleSlider.availableHeight / 2 - height / 2
+                                implicitWidth: 16
+                                implicitHeight: 16
+                                radius: 8
+                                color: Dat.Colors.color.primary
+                                border.color: Dat.Colors.color.on_primary
+                                border.width: 2
+                            }
+
+                            onMoved: {
+                                var mon = currentMonitor || "eDP-1"
+                                var res = resolutionCombo.currentText
+                                var refresh = refreshCombo.currentText
+                                var refr = refresh.replace("Hz", "")
+                                commandRunner.command = ["hyprctl", "keyword", "monitor", `${mon},${res}@${refr},auto,${value}`]
+                                commandRunner.running = true
+                            }
+                        }
+                        
+                        Text {
+                            text: scaleSlider.value.toFixed(2) + "x"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 12
+                            Layout.preferredWidth: 40
+                        }
+                    }
+                    
+                    // Brightness
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        
+                        Text {
+                            Layout.preferredWidth: 120
+                            text: "Brightness"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 12
+                        }
+                        
+                        Slider {
+                            id: brightnessSlider
+                            Layout.fillWidth: true
+                            from: 0
+                            to: 100
+                            value: 70
+                            
+                            background: Rectangle {
+                                x: brightnessSlider.leftPadding
+                                y: brightnessSlider.topPadding + brightnessSlider.availableHeight / 2 - height / 2
+                                implicitWidth: 200
+                                implicitHeight: 4
+                                width: brightnessSlider.availableWidth
+                                height: implicitHeight
+                                radius: 2
+                                color: Dat.Colors.color.surface
+                                
+                                Rectangle {
+                                    width: brightnessSlider.visualPosition * parent.width
+                                    height: parent.height
+                                    color: Dat.Colors.color.primary
+                                    radius: 2
+                                }
+                            }
+                            
+                            handle: Rectangle {
+                                x: brightnessSlider.leftPadding + brightnessSlider.visualPosition * (brightnessSlider.availableWidth - width)
+                                y: brightnessSlider.topPadding + brightnessSlider.availableHeight / 2 - height / 2
+                                implicitWidth: 16
+                                implicitHeight: 16
+                                radius: 8
+                                color: Dat.Colors.color.primary
+                                border.color: Dat.Colors.color.on_primary
+                                border.width: 2
+                            }
+                            
+                            onValueChanged: {
+                                commandRunner.command = ["brightnessctl", "set", Math.round(value) + "%"]
+                                commandRunner.callback = null
+                                commandRunner.running = true
+                            }
+                        }
+                        
+                        Text {
+                            text: Math.round(brightnessSlider.value) + "%"
+                            color: Dat.Colors.color.on_surface
+                            font.pixelSize: 12
+                            Layout.preferredWidth: 40
                         }
                     }
                 }

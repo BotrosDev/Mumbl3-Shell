@@ -372,9 +372,9 @@ wl-paste --watch
 - [ ] AccountsTab (0%)
 - [ ] DataTab (0%)
 - [x] SystemTab (100%)
-- [ ] DevicesTab (5% - brightness works!)
+- [x] DevicesTab (100% - moved display to PersonalizationsTab)
 - [ ] NetworksTab (0%)
-- [ ] PersonalizationsTab (0%)
+- [ ] PersonalizationsTab (50%)
 - [ ] PowerTab (0%)
 - [ ] PrivacyTab (0%)
 
