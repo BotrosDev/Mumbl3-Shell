@@ -28,11 +28,8 @@ A Frieren-themed Quickshell config for Hyprland featuring dropdown panel, media 
 ---
 
 ## Screenshots
-![Alt text description](Pictures/Screenshot_2026-02-26_23-36-12.png)
-![Alt text](Pictures/Screenshot_2026-02-26_23-36-53.png)
-![Alt text](Pictures/Screenshot_2026-02-26_23-37-31.png)
-![Alt text](Pictures/Screenshot_2026-02-26_23-38-42.png)
-![Alt text](Pictures/WallpaperChanged.png)
+![Alt text description](Pictures/Screenshot_2026-02-26_23-36-12.png) ![Alt text](Pictures/Screenshot_2026-02-26_23-36-53.png)
+![Alt text](Pictures/Screenshot_2026-02-26_23-37-31.png) ![Alt text](Pictures/Screenshot_2026-02-26_23-38-42.png) ![Alt text](Pictures/WallpaperChanged.png)
 
 ---
 
