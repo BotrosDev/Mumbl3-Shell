@@ -143,55 +143,24 @@ matugen generates a color palette from your wallpaper and saves it to `~/.local/
 ## Project Structure
 
 ```
-~/.config/quickshell/bar/
-├── Assets/                    # Frieren-themed images and GIFs
-│   ├── frieren-kuru-kuru.gif
-│   ├── FrierenHeart.png
-│   ├── sleepOnHimmel.png
-│   └── ... (more Frieren goodness)
-│
-├── dropdownPanel/            # Main dropdown panel
-│   ├── Data/                 # Core data providers
-│   │   ├── Colors.qml       # Matugen color integration
-│   │   ├── Audio.qml        # Audio management
-│   │   ├── Clock.qml        # Time/date logic
-│   │   ├── Globals.qml      # Global state
-│   │   └── ...
-│   │
-│   ├── Generics/            # Reusable components
-│   │   ├── MatIcon.qml
-│   │   ├── AudioSlider.qml
-│   │   ├── Notification.qml
-│   │   └── ...
-│   │
-│   ├── modules/             # Feature modules
-│   │   ├── MediaPlayer.qml
-│   │   ├── Calendar.qml
-│   │   ├── Notif.qml
-│   │   ├── Settings.qml     # (UI mockup)
-│   │   └── ...
-│   │
-│   ├── WallpaperSelector/   # Wallpaper management
-│   └── DropdownPanelWindow.qml  # Main panel window
-│
-├── modules/                 # Bar modules
-│   ├── bar/
-│   │   ├── Bar.qml         # Top bar definition
-│   │   ├── BarClock.qml
-│   │   ├── Workspace.qml
-│   │   └── ...
-│   │
-│   ├── widgets/            # System widgets
-│   │   ├── Battery.qml
-│   │   ├── Volume.qml
-│   │   ├── WiFi.qml
-│   │   └── ...
-│   │
-│   └── images/             # Theme icons
-│       ├── theme-dark/
-│       └── theme-light/
-│
-└── shell.qml               # Main entry point
+## Project Structure
+├── .config/
+│   ├── hypr/                  # Hyprland config
+│   ├── quickshell/            # ← Main Quickshell config (copy this folder)
+│   │   ├── assets/            # Frieren-themed images & GIFs
+│   │   ├── components/        # Reusable QML components
+│   │   ├── core/              # Core data & logic
+│   │   ├── scripts/           # Helper scripts
+│   │   ├── theme/             # Theme files + images
+│   │   ├── shell.qml          # Main entry point
+│   │   ├── theme-settings.json
+│   │   └── launch-counts.db
+│   └── rofi/                  # Rofi configs (temporary)
+├── Pictures/                  # Screenshots & extra assets
+├── matugen/                   # Matugen config + templates
+├── TASKS.md
+├── README.md
+└── 
 ```
 
 ## Contributing
